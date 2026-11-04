@@ -41,7 +41,7 @@ html, body {
 .fade { transition: opacity .45s ease; }
 
 /* ---------- landing ---------- */
-.landing .layer-b { opacity: 0; transition: opacity .9s ease; }
+.landing .layer-b { opacity: 0; transition: opacity var(--swap-dur, .6s) ease; }
 .landing.is-b .layer-b { opacity: 1; }
 
 /* ---------- people ---------- */

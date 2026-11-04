@@ -173,9 +173,14 @@
 
   /* ---------------- landing: hovering the hero swaps to version B ---------------- */
   if (stage && stage.classList.contains('landing')) {
+    // Figma "While hovering": show the after-hover version only while the mouse is on the hotspot
     stage.querySelectorAll('[data-swap]').forEach(function (el) {
-      el.addEventListener('pointerenter', function () { stage.classList.add('is-b'); });
-      el.addEventListener('click', function () { stage.classList.add('is-b'); });
+      var dur = el.getAttribute('data-dur') || '0.6';
+      el.addEventListener('pointerenter', function () {
+        stage.style.setProperty('--swap-dur', dur + 's');
+        stage.classList.add('is-b');
+      });
+      el.addEventListener('pointerleave', function () { stage.classList.remove('is-b'); });
     });
   }
 
@@ -189,6 +194,9 @@
       }
       el.addEventListener('pointerenter', show);
       el.addEventListener('click', show);
+      el.addEventListener('pointerleave', function () {
+        bands.forEach(function (b) { b.classList.remove('on'); });
+      });
     });
   }
 
