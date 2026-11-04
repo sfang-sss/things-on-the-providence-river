@@ -212,11 +212,12 @@
     var syms = stage.querySelector('.syms');
     var CONTENT_TOP = 1498, CONTENT_H = 633, RIVER_END = 3238;
     var TOGETHER = 260;   // scroll distance (design px) the river first stays with the text
+    var EARLY = 400;      // release the group this much earlier -> more space above the 1997 section
     var S0 = 0, RMAX = 0;
     function layoutRiver() {
       var vh = window.innerHeight / zoom;                         // viewport height in design px
       S0 = Math.round(CONTENT_TOP + CONTENT_H / 2 - vh / 2);      // group pins when the symbols are centred
-      RMAX = Math.max(0, Math.round(RIVER_END - S0 - vh * 0.75)); // river travel until its end is on screen
+      RMAX = Math.max(0, Math.round(RIVER_END - S0 - vh * 0.75 - EARLY)); // river travel before both slide out
       sec.style.top = S0 + 'px';
       sec.style.height = (TOGETHER + RMAX + vh) + 'px';          // after this the whole group scrolls away
       box.style.height = vh + 'px';
