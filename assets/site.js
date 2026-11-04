@@ -210,19 +210,48 @@
     });
   }
 
-  /* ---------------- people: three symbols switch the river map ---------------- */
+  /* ---------------- people: sticky river section + symbol hovers ---------------- */
   if (stage && stage.classList.contains('people')) {
-    var bands = stage.querySelectorAll('.band');
+    var sec = stage.querySelector('.river-sec');
+    var box = stage.querySelector('.river-sticky');
+    var track = stage.querySelector('.river-track');
+    var syms = stage.querySelector('.syms');
+    var RIVER_TOP = 1296, RIVER_END = 3238, SYM_TOP = 1312, CONTENT_TOP = 1498, CONTENT_H = 633;
+    var S0 = 0, PMAX = 0;
+    function layoutRiver() {
+      var vh = window.innerHeight / zoom;                          // viewport height in design px
+      S0 = Math.round(CONTENT_TOP + CONTENT_H / 2 - vh / 2);      // pin when the symbols are centred
+      var releaseAt = Math.max(S0, Math.round(RIVER_END - vh * 0.85)); // unpin once the river end is shown
+      PMAX = releaseAt - S0;
+      sec.style.top = S0 + 'px';
+      sec.style.height = (PMAX + vh) + 'px';
+      box.style.height = vh + 'px';
+      track.style.top = (RIVER_TOP - S0) + 'px';
+      syms.style.top = (SYM_TOP - S0) + 'px';
+      moveRiver();
+    }
+    function moveRiver() {
+      var y = window.scrollY / zoom;                               // page scroll in design px
+      var p = Math.min(PMAX, Math.max(0, y - S0));
+      track.style.transform = 'translate3d(0,' + (-p) + 'px,0)';  // river + icons move together
+    }
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return; ticking = true;
+      requestAnimationFrame(function () { ticking = false; moveRiver(); });
+    }, { passive: true });
+    window.addEventListener('resize', function () { requestAnimationFrame(layoutRiver); });
+    layoutRiver();
+
+    var ovs = stage.querySelectorAll('.river-sec .ov');
+    function showState(s) {
+      ovs.forEach(function (o) { o.classList.toggle('on', o.getAttribute('data-band') === s); });
+      syms.classList.toggle('has-state', !!s);
+    }
     stage.querySelectorAll('[data-state]').forEach(function (el) {
-      function show() {
-        var s = el.getAttribute('data-state');
-        bands.forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-band') === s); });
-      }
-      el.addEventListener('pointerenter', show);
-      el.addEventListener('click', show);
-      el.addEventListener('pointerleave', function () {
-        bands.forEach(function (b) { b.classList.remove('on'); });
-      });
+      var s = el.getAttribute('data-state');
+      el.addEventListener('pointerenter', function () { showState(s); });   // Figma: while hovering
+      el.addEventListener('pointerleave', function () { showState(null); });
     });
   }
 
@@ -244,7 +273,7 @@
     }
     function snd(key) {
       if (!sounds[key]) {
-        var a = new Audio('assets/sounds/' + key + '.mp3');
+        var a = new Audio('assets/sounds/' + key + '.mp3?v=' + Date.now());
         a.preload = 'auto';
         sounds[key] = a;
       }
