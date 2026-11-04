@@ -208,16 +208,32 @@
     var sec = stage.querySelector('.river-sec');
     var box = stage.querySelector('.river-sticky');
     var group = stage.querySelector('.river-group');
+    var track = stage.querySelector('.river-track');
     var syms = stage.querySelector('.syms');
-    var CONTENT_TOP = 1498, CONTENT_H = 633, HOLD = 520;  // HOLD = scroll distance (design px) the group stays put
+    var CONTENT_TOP = 1498, CONTENT_H = 633, RIVER_END = 3238;
+    var TOGETHER = 260;   // scroll distance (design px) the river first stays with the text
+    var S0 = 0, RMAX = 0;
     function layoutRiver() {
-      var vh = window.innerHeight / zoom;                       // viewport height in design px
-      var S0 = Math.round(CONTENT_TOP + CONTENT_H / 2 - vh / 2); // pin when the symbols are centred
+      var vh = window.innerHeight / zoom;                         // viewport height in design px
+      S0 = Math.round(CONTENT_TOP + CONTENT_H / 2 - vh / 2);      // group pins when the symbols are centred
+      RMAX = Math.max(0, Math.round(RIVER_END - S0 - vh * 0.75)); // river travel until its end is on screen
       sec.style.top = S0 + 'px';
-      sec.style.height = (HOLD + vh) + 'px';
+      sec.style.height = (TOGETHER + RMAX + vh) + 'px';          // after this the whole group scrolls away
       box.style.height = vh + 'px';
-      group.style.top = (-S0) + 'px';                           // group children use page coordinates
+      group.style.top = (-S0) + 'px';                             // children use page coordinates
+      moveRiver();
     }
+    function moveRiver() {
+      var y = window.scrollY / zoom;
+      var p = Math.min(RMAX, Math.max(0, y - S0 - TOGETHER));
+      // river + its icons move as one container; text/symbols stay pinned
+      track.style.transform = 'translate3d(0,' + (-p) + 'px,0)';
+    }
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return; ticking = true;
+      requestAnimationFrame(function () { ticking = false; moveRiver(); });
+    }, { passive: true });
     window.addEventListener('resize', function () { requestAnimationFrame(layoutRiver); });
     layoutRiver();
 

@@ -71,8 +71,8 @@ html, body {
 /* the whole group moves as one: river, icons, instruction text and symbols */
 .people .river-group { position: absolute; left: 0; width: 1728px; height: 0; }
 /* river + icons: one shared container; site.js translates THIS element only */
-.people .river-track { position: absolute; width: 803px; height: 2153px; }
-.people .river-track img { position: absolute; left: 0; top: 0; width: 803px; height: 2153px; }
+.people .river-track { position: absolute; left: 0; top: 0; width: 1728px; height: 0; will-change: transform; }
+
 .people .syms { position: absolute; width: 646px; height: 871px; }
 .people .syms img { position: absolute; left: 0; top: 0; width: 646px; height: 871px; }
 .people .syms .hot { pointer-events: auto; }
@@ -139,3 +139,6 @@ html, body {
 
 /* While a reveal is pending, hide the page so it never flashes */
 html.tr-pending .stage { visibility: hidden; }
+
+/* Nav ("things ON the PVD RIVER", NATURE, PEOPLE) stays fixed at the top of every page */
+.nav-fixed { position: fixed !important; z-index: 30; }
