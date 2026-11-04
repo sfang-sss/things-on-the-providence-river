@@ -1,0 +1,105 @@
+:root {
+  --blue: #aec8e6;
+  --blue-deep: #5a73b3;
+  --ink: #1b2236;
+  --paper: #ffffff;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+/* The design is 1728px wide; site.js zooms the stage to fit the window. */
+.stage {
+  position: relative;
+  width: 1728px;
+  margin: 0;
+  overflow: hidden;
+}
+
+.stage img { display: block; user-select: none; -webkit-user-drag: none; }
+
+.abs { position: absolute; }
+.base { position: absolute; left: 0; top: 0; width: 1728px; }
+
+/* hover pair: .a is the default picture, .b the hover picture */
+.hov { position: absolute; display: block; cursor: pointer; }
+.hov img { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity .3s ease; }
+.hov .b { opacity: 0; }
+.hov:hover .a, .hov.on .a { opacity: 0; }
+.hov:hover .b, .hov.on .b { opacity: 1; }
+.hov:focus-visible { outline: 2px solid var(--blue-deep); outline-offset: 4px; border-radius: 6px; }
+
+.hot { position: absolute; display: block; cursor: pointer; }
+
+.fade { transition: opacity .45s ease; }
+
+/* ---------- landing ---------- */
+.landing .layer-b { opacity: 0; transition: opacity .9s ease; }
+.landing.is-b .layer-b { opacity: 1; }
+
+/* ---------- people ---------- */
+.people .band { position: absolute; left: 0; width: 1728px; opacity: 0; transition: opacity .35s ease; pointer-events: none; }
+.people .band.on { opacity: 1; }
+
+/* ---------- birds ---------- */
+.bird { position: absolute; cursor: pointer; }
+.bird img { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity .3s ease; }
+.bird .b { opacity: 0; }
+.bird.on .a { opacity: 0; }
+.bird.on .b { opacity: 1; }
+
+/* ---------- frequency ---------- */
+.freq .photo { position: absolute; left: -91px; top: 345px; width: 1961px; height: 2538px; opacity: 0; transition: opacity .45s ease; pointer-events: none; object-fit: contain; }
+.freq .photo.on { opacity: .7; }
+.freq .ov { opacity: 0; transition: opacity .25s ease; pointer-events: none; }
+.freq .ov.on { opacity: 1; }
+.freq .months-track { position: absolute; left: 344px; top: 990px; width: 1196px; bottom: 0; pointer-events: none; z-index: 5; }
+.freq .months-track img { position: sticky; top: 0; width: 1196px; height: 76px; }
+.freq .row-hit { position: absolute; cursor: pointer; }
+
+/* ---------- sound toggle (not zoomed) ---------- */
+.sound-toggle {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid rgba(90, 115, 179, .35);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .92);
+  color: var(--blue-deep);
+  font: 500 14px/1.2 -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: .02em;
+  box-shadow: 0 2px 10px rgba(27, 34, 54, .12);
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+.sound-toggle:hover { background: #fff; }
+.sound-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: #c9d3e6; }
+.sound-toggle.on .dot { background: var(--blue-deep); box-shadow: 0 0 0 4px rgba(90, 115, 179, .18); }
+
+/* ---------- page transition overlay ---------- */
+#tr {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  pointer-events: none;
+}
+#tr.cover { pointer-events: all; }
+.tr-fallback { background: #eef4fb; opacity: 0; transition: opacity .5s ease; }
+.tr-fallback.cover { opacity: 1; }
+
+/* While a reveal is pending, hide the page so it never flashes */
+html.tr-pending .stage { visibility: hidden; }
