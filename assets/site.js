@@ -12,10 +12,24 @@
   var zoom = 1;
 
   /* ---------------- fit the design to the window ---------------- */
+  // Phones: everything 1.5x bigger than "fit to width" (page scrolls sideways too).
+  // Desktop stays exactly as before.
+  var MOBILE_SCALE = 1.5;
+  var mobileQuery = window.matchMedia('(max-width: 900px)');
+  var baseW = 0;
   function fit() {
     if (!stage) return;
-    zoom = document.documentElement.clientWidth / DESIGN_W;
+    var mobile = mobileQuery.matches;
+    document.documentElement.classList.toggle('is-mobile', mobile);
+    // on phones measure the screen once so the extra width doesn't feed back into the size
+    if (mobile && !baseW) baseW = Math.min(window.innerWidth, screen.width || window.innerWidth);
+    if (!mobile) baseW = document.documentElement.clientWidth;
+    else baseW = Math.min(baseW, screen.width || baseW);
+    var k = mobile ? MOBILE_SCALE : 1;
+    zoom = baseW / DESIGN_W * k;
     stage.style.zoom = zoom;
+    // fixed nav / buttons keep their normal (fit-to-screen) size and position on phones
+    stage.querySelectorAll('.nav-fixed, .fixed-btn').forEach(function (el) { el.style.zoom = mobile ? 1 / k : ''; });
   }
   fit();
   window.addEventListener('resize', fit);

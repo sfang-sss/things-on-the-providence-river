@@ -142,3 +142,9 @@ html.tr-pending .stage { visibility: hidden; }
 
 /* Nav ("things ON the PVD RIVER", NATURE, PEOPLE) stays fixed at the top of every page */
 .nav-fixed { position: fixed !important; z-index: 30; }
+
+/* Phones: the page is 1.5x wider than the screen, so allow sideways scrolling */
+html.is-mobile { overflow-x: auto; }
+html.is-mobile body { overflow-x: visible; }
+/* Phones: keep "Explore more" pinned to the bottom-right corner of the screen */
+html.is-mobile .fixed-btn { top: auto !important; bottom: 120px; }
