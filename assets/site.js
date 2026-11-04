@@ -171,16 +171,42 @@
     }
   });
 
-  /* ---------------- landing: hovering the hero swaps to version B ---------------- */
+  /* ---------------- landing: smart animate to "after hover" while hovering ---------------- */
   if (stage && stage.classList.contains('landing')) {
-    // Figma "While hovering": show the after-hover version only while the mouse is on the hotspot
+    var locked = false;
+    function setEase(name) {
+      stage.classList.toggle('ease-bouncy', name === 'bouncy');
+    }
+    function lockAfter(animated) {
+      locked = true;
+      if (!animated) {
+        stage.classList.add('no-anim');
+        stage.classList.add('is-b');
+        void stage.offsetWidth;
+        stage.classList.remove('no-anim');
+      } else {
+        stage.classList.add('is-b');
+      }
+    }
+    if (location.hash === '#after') lockAfter(false);
     stage.querySelectorAll('[data-swap]').forEach(function (el) {
-      var dur = el.getAttribute('data-dur') || '0.6';
       el.addEventListener('pointerenter', function () {
-        stage.style.setProperty('--swap-dur', dur + 's');
+        if (locked) return;
+        setEase(el.getAttribute('data-ease'));
         stage.classList.add('is-b');
       });
-      el.addEventListener('pointerleave', function () { stage.classList.remove('is-b'); });
+      el.addEventListener('pointerleave', function () {
+        if (locked) return;
+        setEase(el.getAttribute('data-ease'));
+        stage.classList.remove('is-b');
+      });
+    });
+    // "BACK TO TOP": on the default page Figma opens the after-hover page; on the after-hover page it scrolls up
+    var topBtn = stage.querySelector('[data-top-btn]');
+    if (topBtn) topBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (!locked) { setEase('out'); lockAfter(true); history.replaceState(null, '', '#after'); }
+      else scrollToDesignY(2552);
     });
   }
 
