@@ -6,6 +6,8 @@
   'use strict';
 
   var DESIGN_W = 1728;
+  // On phones/tablets there is no hover: a tap toggles the same effect instead.
+  function isHover(e) { return !e || e.pointerType !== 'touch'; }
   var stage = document.querySelector('.stage');
   var zoom = 1;
 
@@ -190,15 +192,20 @@
     }
     if (location.hash === '#after') lockAfter(false);
     stage.querySelectorAll('[data-swap]').forEach(function (el) {
-      el.addEventListener('pointerenter', function () {
-        if (locked) return;
+      el.addEventListener('pointerenter', function (e) {
+        if (locked || !isHover(e)) return;
         setEase(el.getAttribute('data-ease'));
         stage.classList.add('is-b');
       });
-      el.addEventListener('pointerleave', function () {
-        if (locked) return;
+      el.addEventListener('pointerleave', function (e) {
+        if (locked || !isHover(e)) return;
         setEase(el.getAttribute('data-ease'));
         stage.classList.remove('is-b');
+      });
+      el.addEventListener('pointerup', function (e) {     // touch: tap to switch back and forth
+        if (locked || isHover(e)) return;
+        setEase(el.getAttribute('data-ease'));
+        stage.classList.toggle('is-b');
       });
     });
   }
@@ -245,8 +252,13 @@
     }
     stage.querySelectorAll('[data-state]').forEach(function (el) {
       var s = el.getAttribute('data-state');
-      el.addEventListener('pointerenter', function () { showState(s); });   // Figma: while hovering
-      el.addEventListener('pointerleave', function () { showState(null); });
+      el.addEventListener('pointerenter', function (e) { if (isHover(e)) showState(s); });   // Figma: while hovering
+      el.addEventListener('pointerleave', function (e) { if (isHover(e)) showState(null); });
+      el.addEventListener('pointerup', function (e) {     // touch: tap to show, tap again to hide
+        if (isHover(e)) return;
+        var on = syms.classList.contains('has-state') && stage.querySelector('.river-sec .ov.on[data-band="' + s + '"]');
+        showState(on ? null : s);
+      });
     });
   }
 
@@ -305,10 +317,12 @@
 
     stage.querySelectorAll('.bird').forEach(function (b) {
       var key = b.getAttribute('data-bird');
-      b.addEventListener('pointerenter', function () { b.classList.add('on'); play(key); });
-      b.addEventListener('pointerleave', function () { b.classList.remove('on'); stop(key); });
+      b.addEventListener('pointerenter', function (e) { if (!isHover(e)) return; b.classList.add('on'); play(key); });
+      b.addEventListener('pointerleave', function (e) { if (!isHover(e)) return; b.classList.remove('on'); stop(key); });
       b.addEventListener('click', function () {
         if (!soundOn) setSound(true);
+        // touch: the tapped bird shows its photo and plays; other birds go back to outlines
+        stage.querySelectorAll('.bird.on').forEach(function (o) { if (o !== b) { o.classList.remove('on'); stop(o.getAttribute('data-bird')); } });
         b.classList.add('on');
         play(key);
       });
@@ -328,10 +342,10 @@
     }
     stage.querySelectorAll('.row-hit').forEach(function (el) {
       var i = el.getAttribute('data-hit');
-      el.addEventListener('pointerenter', function () { setRow(i); });
+      el.addEventListener('pointerenter', function (e) { if (isHover(e)) setRow(i); });
       el.addEventListener('click', function () { setRow(i); });
     });
     var area = stage.querySelector('.rows-area');
-    if (area) area.addEventListener('pointerleave', function () { setRow(null); });
+    if (area) area.addEventListener('pointerleave', function (e) { if (isHover(e)) setRow(null); });
   }
 })();
