@@ -67,11 +67,13 @@ html, body {
 
 /* ---------- people: sticky river section ---------- */
 .people .river-sec { position: absolute; left: 0; width: 1728px; pointer-events: none; z-index: 2; }
-.people .river-sticky { position: sticky; top: 0; width: 1728px; overflow: clip; }
+.people .river-sticky { position: sticky; top: 0; width: 1728px; }
+/* the whole group moves as one: river, icons, instruction text and symbols */
+.people .river-group { position: absolute; left: 0; width: 1728px; height: 0; }
 /* river + icons: one shared container; site.js translates THIS element only */
-.people .river-track { position: absolute; left: 925px; width: 803px; height: 2153px; will-change: transform; }
+.people .river-track { position: absolute; width: 803px; height: 2153px; }
 .people .river-track img { position: absolute; left: 0; top: 0; width: 803px; height: 2153px; }
-.people .syms { position: absolute; left: 321px; width: 646px; height: 871px; }
+.people .syms { position: absolute; width: 646px; height: 871px; }
 .people .syms img { position: absolute; left: 0; top: 0; width: 646px; height: 871px; }
 .people .syms .hot { pointer-events: auto; }
 .people .ov { opacity: 0; transition: opacity .3s cubic-bezier(0, 0, .58, 1); }

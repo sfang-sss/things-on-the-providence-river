@@ -201,45 +201,23 @@
         stage.classList.remove('is-b');
       });
     });
-    // "BACK TO TOP": on the default page Figma opens the after-hover page; on the after-hover page it scrolls up
-    var topBtn = stage.querySelector('[data-top-btn]');
-    if (topBtn) topBtn.addEventListener('click', function (e) {
-      e.preventDefault();
-      if (!locked) { setEase('out'); lockAfter(true); history.replaceState(null, '', '#after'); }
-      else scrollToDesignY(2552);
-    });
   }
 
   /* ---------------- people: sticky river section + symbol hovers ---------------- */
   if (stage && stage.classList.contains('people')) {
     var sec = stage.querySelector('.river-sec');
     var box = stage.querySelector('.river-sticky');
-    var track = stage.querySelector('.river-track');
+    var group = stage.querySelector('.river-group');
     var syms = stage.querySelector('.syms');
-    var RIVER_TOP = 1296, RIVER_END = 3238, SYM_TOP = 1312, CONTENT_TOP = 1498, CONTENT_H = 633;
-    var S0 = 0, PMAX = 0;
+    var CONTENT_TOP = 1498, CONTENT_H = 633, HOLD = 520;  // HOLD = scroll distance (design px) the group stays put
     function layoutRiver() {
-      var vh = window.innerHeight / zoom;                          // viewport height in design px
-      S0 = Math.round(CONTENT_TOP + CONTENT_H / 2 - vh / 2);      // pin when the symbols are centred
-      var releaseAt = Math.max(S0, Math.round(RIVER_END - vh * 0.85)); // unpin once the river end is shown
-      PMAX = releaseAt - S0;
+      var vh = window.innerHeight / zoom;                       // viewport height in design px
+      var S0 = Math.round(CONTENT_TOP + CONTENT_H / 2 - vh / 2); // pin when the symbols are centred
       sec.style.top = S0 + 'px';
-      sec.style.height = (PMAX + vh) + 'px';
+      sec.style.height = (HOLD + vh) + 'px';
       box.style.height = vh + 'px';
-      track.style.top = (RIVER_TOP - S0) + 'px';
-      syms.style.top = (SYM_TOP - S0) + 'px';
-      moveRiver();
+      group.style.top = (-S0) + 'px';                           // group children use page coordinates
     }
-    function moveRiver() {
-      var y = window.scrollY / zoom;                               // page scroll in design px
-      var p = Math.min(PMAX, Math.max(0, y - S0));
-      track.style.transform = 'translate3d(0,' + (-p) + 'px,0)';  // river + icons move together
-    }
-    var ticking = false;
-    window.addEventListener('scroll', function () {
-      if (ticking) return; ticking = true;
-      requestAnimationFrame(function () { ticking = false; moveRiver(); });
-    }, { passive: true });
     window.addEventListener('resize', function () { requestAnimationFrame(layoutRiver); });
     layoutRiver();
 
